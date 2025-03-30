@@ -22,6 +22,17 @@ pub struct Effects(pub Entity);
 #[relationship_target(relationship = Effects, linked_spawn)]
 pub struct EffectedBy(Vec<Entity>);
 
+impl<'a> IntoIterator for &'a EffectedBy {
+    type Item = <Self::IntoIter as Iterator>::Item;
+
+    type IntoIter = std::slice::Iter<'a, Entity>;
+
+    #[inline(always)]
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
+    }
+}
+
 /// Despawns the entity when the timer finishes.
 #[derive(Component)]
 pub struct Lifetime(pub Timer);
