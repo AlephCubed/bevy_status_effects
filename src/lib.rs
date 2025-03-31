@@ -1,14 +1,15 @@
 use bevy_app::{App, Plugin, PreUpdate};
 use bevy_asset::Handle;
-use bevy_ecs::prelude::{Commands, Component, Entity, Query, Res};
+use bevy_ecs::prelude::*;
 use bevy_image::Image;
-use bevy_time::{Time, Timer};
+use bevy_time::{Time, Timer, TimerMode};
+use std::time::Duration;
 
 pub struct StatusEffectPlugin;
 
 impl Plugin for StatusEffectPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PreUpdate, despawn_finished_lifetimes);
+        app.add_systems(PreUpdate, (despawn_finished_lifetimes, tick_delay).chain());
     }
 }
 
@@ -37,6 +38,30 @@ impl<'a> IntoIterator for &'a EffectedBy {
 #[derive(Component)]
 pub struct Lifetime(pub Timer);
 
+impl Lifetime {
+    pub fn new(duration: Duration) -> Self {
+        Self(Timer::new(duration, TimerMode::Once))
+    }
+
+    pub fn from_seconds(seconds: f32) -> Self {
+        Self::new(Duration::from_secs_f32(seconds))
+    }
+}
+
+/// Repeating timer used for the delay between effect applications.  
+#[derive(Component)]
+pub struct Delay(pub Timer);
+
+impl Delay {
+    pub fn new(duration: Duration) -> Self {
+        Self(Timer::new(duration, TimerMode::Repeating))
+    }
+
+    pub fn from_seconds(seconds: f32) -> Self {
+        Self::new(Duration::from_secs_f32(seconds))
+    }
+}
+
 fn despawn_finished_lifetimes(
     mut commands: Commands,
     time: Res<Time>,
@@ -48,6 +73,12 @@ fn despawn_finished_lifetimes(
         if lifetime.0.finished() {
             commands.entity(entity).despawn();
         }
+    }
+}
+
+fn tick_delay(time: Res<Time>, mut query: Query<&mut Delay>) {
+    for mut delay in &mut query {
+        delay.0.tick(time.delta());
     }
 }
 
