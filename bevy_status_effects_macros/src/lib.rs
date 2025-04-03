@@ -8,6 +8,7 @@ use syn::{Attribute, DeriveInput, Token};
 pub fn stat_container_derive(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let tree: DeriveInput = syn::parse(item).expect("TokenStream must be valid.");
 
+    #[cfg(feature = "bevy_butler")]
     let mut systems = Vec::new();
     let mut trait_impl = None;
 
@@ -21,6 +22,7 @@ pub fn stat_container_derive(item: proc_macro::TokenStream) -> proc_macro::Token
         };
 
         match ident.to_string().as_str() {
+            #[cfg(feature = "bevy_butler")]
             "add_component" => parse_add_component(attr, struct_name, &mut systems),
             "effect_type" => trait_impl = parse_effect_type(attr, struct_name),
             _ => continue,
@@ -33,13 +35,21 @@ pub fn stat_container_derive(item: proc_macro::TokenStream) -> proc_macro::Token
         }
     });
 
-    quote! {
+    #[cfg(feature = "bevy_butler")]
+    return quote! {
         #trait_impl
         #(#systems)*
+    }
+    .into();
+
+    #[cfg(not(feature = "bevy_butler"))]
+    quote! {
+        #trait_impl
     }
     .into()
 }
 
+#[cfg(feature = "bevy_butler")]
 fn parse_add_component(attr: &Attribute, struct_name: &Ident, systems: &mut Vec<TokenStream>) {
     attr.parse_nested_meta(|meta| {
         let Some(var_name) = meta.path.segments.first() else {

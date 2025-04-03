@@ -73,19 +73,19 @@ mod tests {
     use bevy_status_effects_macros::StatusEffect;
 
     #[derive(StatusEffect)]
-    struct Default;
+    struct StackDefault;
 
     #[test]
     fn default() {
-        assert_eq!(Default::TYPE, EffectType::Stack);
+        assert_eq!(StackDefault::TYPE, EffectType::Stack);
     }
 
     #[derive(StatusEffect)]
     #[effect_type(Refresh)]
-    struct Overriden;
+    struct RefreshOverride;
 
     #[test]
     fn overriden() {
-        assert_eq!(Overriden::TYPE, EffectType::Refresh);
+        assert_eq!(RefreshOverride::TYPE, EffectType::Refresh);
     }
 }

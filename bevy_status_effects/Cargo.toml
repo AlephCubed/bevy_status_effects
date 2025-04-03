@@ -9,9 +9,13 @@ repository = "https://github.com/AlephCubed/bevy_status_effects"
 license = "MIT OR Apache-2.0"
 authors = ["AlephCubed"]
 
+[features]
+bevy_butler = ["bevy-butler", "bevy_status_effects_macros/bevy_butler"]
+
 [dependencies]
 bevy_app = { version = "0.16.0-rc.1", default-features = false }
 bevy_asset = { version = "0.16.0-rc.1", default-features = false }
+bevy-butler = { version = "0.6.1-alpha.1", optional = true }
 bevy_ecs = { version = "0.16.0-rc.1", default-features = false }
 bevy_image = { version = "0.16.0-rc.1", default-features = false, features = [
   "bevy_reflect",
