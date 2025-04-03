@@ -53,11 +53,10 @@ fn effect_refresh_hook<T: Component + StatusEffect>(
         return;
     };
 
-    let effects = world
-        .get::<EffectedBy>(target.0)
-        .unwrap()
-        .collection()
-        .clone();
+    let effects = match world.get::<EffectedBy>(target.0) {
+        None => return,
+        Some(e) => e.collection().clone(),
+    };
 
     for effect in effects {
         if world.get::<T>(effect).is_some() {
@@ -72,7 +71,7 @@ mod tests {
     use crate as bevy_status_effects;
     use bevy_status_effects_macros::StatusEffect;
 
-    #[derive(StatusEffect)]
+    #[derive(StatusEffect, Component, Debug, Eq, PartialEq, Default)]
     struct StackDefault;
 
     #[test]
@@ -80,12 +79,29 @@ mod tests {
         assert_eq!(StackDefault::TYPE, EffectType::Stack);
     }
 
-    #[derive(StatusEffect)]
+    #[derive(StatusEffect, Component, Debug, Eq, PartialEq, Default)]
     #[effect_type(Refresh)]
     struct RefreshOverride;
 
     #[test]
     fn overriden() {
         assert_eq!(RefreshOverride::TYPE, EffectType::Refresh);
+    }
+
+    #[test]
+    fn refresh_hook() {
+        let mut world = World::new();
+        world
+            .register_component_hooks::<RefreshOverride>()
+            .on_add(effect_refresh_hook::<RefreshOverride>);
+
+        let target = world.spawn_empty().id();
+        let first = world.spawn((RefreshOverride, Effecting(target))).id();
+        let second = world.spawn((RefreshOverride, Effecting(target))).id();
+
+        world.flush();
+
+        assert_eq!(world.get::<RefreshOverride>(first), None);
+        assert_eq!(world.get::<RefreshOverride>(second), Some(&RefreshOverride));
     }
 }
