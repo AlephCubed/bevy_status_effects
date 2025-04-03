@@ -1,7 +1,12 @@
 use proc_macro_error::{emit_error, proc_macro_error};
-use proc_macro2::{Ident, Span, TokenStream};
+use proc_macro2::{Ident, TokenStream};
 use quote::quote;
-use syn::{Attribute, DeriveInput, Token};
+use syn::{Attribute, DeriveInput};
+
+#[cfg(feature = "bevy_butler")]
+use proc_macro2::Span;
+#[cfg(feature = "bevy_butler")]
+use syn::Token;
 
 #[proc_macro_derive(StatusEffect, attributes(add_component, effect_type))]
 #[proc_macro_error]
