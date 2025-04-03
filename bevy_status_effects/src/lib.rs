@@ -1,3 +1,6 @@
+#[cfg(feature = "bevy_butler")]
+pub mod bevy_butler;
+
 pub mod relation;
 pub mod timer;
 
@@ -8,6 +11,8 @@ use bevy_ecs::component::HookContext;
 use bevy_ecs::prelude::*;
 use bevy_ecs::world::DeferredWorld;
 use bevy_image::Image;
+
+pub use bevy_app::Startup;
 
 pub struct StatusEffectPlugin;
 
@@ -53,12 +58,15 @@ fn effect_refresh_hook<T: Component + StatusEffect>(
         return;
     };
 
-    let effects = match world.get::<EffectedBy>(target.0) {
+    let effected_by = match world.get::<EffectedBy>(target.0) {
         None => return,
         Some(e) => e.collection().clone(),
     };
 
-    for effect in effects {
+    for effect in effected_by {
+        // `EffectedBy` not updated until later.
+        assert_ne!(effect, context.entity);
+
         if world.get::<T>(effect).is_some() {
             world.commands().entity(effect).despawn();
         }
@@ -84,7 +92,7 @@ mod tests {
     struct RefreshOverride;
 
     #[test]
-    fn overriden() {
+    fn overridden() {
         assert_eq!(RefreshOverride::TYPE, EffectType::Refresh);
     }
 

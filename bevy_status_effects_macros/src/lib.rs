@@ -1,5 +1,5 @@
 use proc_macro_error::{emit_error, proc_macro_error};
-use proc_macro2::{Ident, TokenStream};
+use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 use syn::{Attribute, DeriveInput, Token};
 
@@ -64,10 +64,12 @@ fn parse_add_component(attr: &Attribute, struct_name: &Ident, systems: &mut Vec<
 
         input.parse::<Token![=]>().expect("An equals sign.");
         let input = input.parse::<Ident>().expect("An identifier.");
-
+        
+        let use_as = Ident::new(&format!("__{struct_name}_init_effect_hook"), Span::call_site());
+        
         systems.push(quote! {
-            #[bevy_butler::add_system(generics = <#struct_name>, plugin = #input, schedule = immediate_stats::Startup)]
-            use bevy_status_effects::init_effect_hook;
+            #[bevy_butler::add_system(generics = <#struct_name>, plugin = #input, schedule = bevy_status_effects::Startup)]
+            use bevy_status_effects::init_effect_hook as #use_as;
         });
 
         Ok(())
