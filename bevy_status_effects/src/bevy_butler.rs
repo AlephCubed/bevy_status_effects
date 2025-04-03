@@ -13,7 +13,7 @@ mod tests {
     #[derive(StatusEffect, Component, Debug, Eq, PartialEq, Default)]
     #[add_component(plugin = ButlerPlugin)]
     struct Derive;
-    
+
     #[derive(StatusEffect, Component, Debug, Eq, PartialEq, Default)]
     #[effect_type(Refresh)]
     #[add_component(plugin = ButlerPlugin)]

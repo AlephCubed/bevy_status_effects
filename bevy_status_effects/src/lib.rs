@@ -13,6 +13,7 @@ use bevy_ecs::world::DeferredWorld;
 use bevy_image::Image;
 
 pub use bevy_app::Startup;
+pub use bevy_status_effects_macros::StatusEffect;
 
 pub struct StatusEffectPlugin;
 
