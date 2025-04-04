@@ -13,12 +13,12 @@ authors = ["AlephCubed"]
 bevy_butler = ["bevy-butler", "bevy_status_effects_macros/bevy_butler"]
 
 [dependencies]
-bevy_app = { version = "0.16.0-rc.1", default-features = false }
-bevy_asset = { version = "0.16.0-rc.1", default-features = false }
-bevy-butler = { version = "0.6.1-alpha.1", optional = true }
-bevy_ecs = { version = "0.16.0-rc.1", default-features = false }
-bevy_image = { version = "0.16.0-rc.1", default-features = false, features = [
+bevy_app = { version = "0.16.0-rc", default-features = false }
+bevy_asset = { version = "0.16.0-rc", default-features = false }
+bevy-butler = { version = "0.6.1-alpha", optional = true }
+bevy_ecs = { version = "0.16.0-rc", default-features = false }
+bevy_image = { version = "0.16.0-rc", default-features = false, features = [
   "bevy_reflect",
 ] }
 bevy_status_effects_macros = { path = "../bevy_status_effects_macros" }
-bevy_time = { version = "0.16.0-rc.1", default-features = false }
+bevy_time = { version = "0.16.0-rc", default-features = false }
