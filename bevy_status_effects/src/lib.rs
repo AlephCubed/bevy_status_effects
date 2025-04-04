@@ -29,23 +29,19 @@ impl Plugin for StatusEffectPlugin {
 /// The icon of a status effect.
 pub struct Icon(pub Handle<Image>);
 
-pub trait StatusEffect {
-    const TYPE: EffectType = EffectType::Stack;
-}
+pub trait StatusEffect {}
 
 /// Describes the logic used when multiple of the same effect are applied to the same entity.
-#[derive(Eq, PartialEq, Default, Debug)]
-pub enum EffectType {
+#[derive(Component, Eq, PartialEq, Debug, Default, Copy, Clone)]
+pub enum EffectMode {
     #[default]
     Stack,
-    Refresh,
+    Replace,
+    // Todo
+    // Merge,
 }
 
 pub fn init_effect_hook<T: Component + StatusEffect>(world: &mut World) {
-    if T::TYPE == EffectType::Stack {
-        return;
-    }
-
     world
         .register_component_hooks::<T>()
         .on_add(effect_refresh_hook::<T>);
@@ -55,6 +51,14 @@ fn effect_refresh_hook<T: Component + StatusEffect>(
     mut world: DeferredWorld,
     context: HookContext,
 ) {
+    let Some(mode) = world.get::<EffectMode>(context.entity).copied() else {
+        return;
+    };
+
+    if mode == EffectMode::Stack {
+        return;
+    }
+
     let Some(target) = world.get::<Effecting>(context.entity) else {
         return;
     };
@@ -67,6 +71,14 @@ fn effect_refresh_hook<T: Component + StatusEffect>(
     for effect in effected_by {
         // `EffectedBy` not updated until later.
         assert_ne!(effect, context.entity);
+
+        let Some(other_mode) = world.get::<EffectMode>(effect) else {
+            continue;
+        };
+
+        if mode != *other_mode {
+            continue;
+        }
 
         if world.get::<T>(effect).is_some() {
             world.commands().entity(effect).despawn();
@@ -81,24 +93,10 @@ mod tests {
     use bevy_status_effects_macros::StatusEffect;
 
     #[derive(StatusEffect, Component, Debug, Eq, PartialEq, Default)]
-    struct StackDefault;
-
-    #[test]
-    fn default() {
-        assert_eq!(StackDefault::TYPE, EffectType::Stack);
-    }
-
-    #[derive(StatusEffect, Component, Debug, Eq, PartialEq, Default)]
-    #[effect_type(Refresh)]
     struct RefreshOverride;
 
     #[test]
-    fn overridden() {
-        assert_eq!(RefreshOverride::TYPE, EffectType::Refresh);
-    }
-
-    #[test]
-    fn refresh_hook() {
+    fn stack() {
         let mut world = World::new();
         world
             .register_component_hooks::<RefreshOverride>()
@@ -110,7 +108,67 @@ mod tests {
 
         world.flush();
 
+        assert_eq!(world.get::<RefreshOverride>(first), Some(&RefreshOverride));
+        assert_eq!(world.get::<RefreshOverride>(second), Some(&RefreshOverride));
+    }
+
+    #[test]
+    fn refresh() {
+        let mut world = World::new();
+        world
+            .register_component_hooks::<RefreshOverride>()
+            .on_add(effect_refresh_hook::<RefreshOverride>);
+
+        let target = world.spawn_empty().id();
+        let first = world
+            .spawn((RefreshOverride, Effecting(target), EffectMode::Replace))
+            .id();
+        let second = world
+            .spawn((RefreshOverride, Effecting(target), EffectMode::Replace))
+            .id();
+
+        world.flush();
+
         assert_eq!(world.get::<RefreshOverride>(first), None);
         assert_eq!(world.get::<RefreshOverride>(second), Some(&RefreshOverride));
+    }
+
+    #[test]
+    fn mixed() {
+        let mut world = World::new();
+        world
+            .register_component_hooks::<RefreshOverride>()
+            .on_add(effect_refresh_hook::<RefreshOverride>);
+
+        let target = world.spawn_empty().id();
+
+        let stack_1 = world.spawn((RefreshOverride, Effecting(target))).id();
+        let stack_2 = world
+            .spawn((RefreshOverride, Effecting(target), EffectMode::Stack))
+            .id();
+
+        let replace_1 = world
+            .spawn((RefreshOverride, Effecting(target), EffectMode::Replace))
+            .id();
+        let replace_2 = world
+            .spawn((RefreshOverride, Effecting(target), EffectMode::Replace))
+            .id();
+
+        world.flush();
+
+        assert_eq!(
+            world.get::<RefreshOverride>(stack_1),
+            Some(&RefreshOverride)
+        );
+        assert_eq!(
+            world.get::<RefreshOverride>(stack_2),
+            Some(&RefreshOverride)
+        );
+
+        assert_eq!(world.get::<RefreshOverride>(replace_1), None);
+        assert_eq!(
+            world.get::<RefreshOverride>(replace_2),
+            Some(&RefreshOverride)
+        );
     }
 }

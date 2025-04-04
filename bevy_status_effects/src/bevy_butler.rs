@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate as bevy_status_effects;
+    use crate::EffectMode;
     use crate::relation::Effecting;
     use bevy_app::App;
     use bevy_butler::butler_plugin;
@@ -15,7 +16,6 @@ mod tests {
     struct Derive;
 
     #[derive(StatusEffect, Component, Debug, Eq, PartialEq, Default)]
-    #[effect_type(Refresh)]
     #[add_component(plugin = ButlerPlugin)]
     struct DeriveRefresh;
 
@@ -28,11 +28,11 @@ mod tests {
         let target = app.world_mut().spawn_empty().id();
         let first = app
             .world_mut()
-            .spawn((DeriveRefresh, Effecting(target)))
+            .spawn((DeriveRefresh, Effecting(target), EffectMode::Replace))
             .id();
         let second = app
             .world_mut()
-            .spawn((DeriveRefresh, Effecting(target)))
+            .spawn((DeriveRefresh, Effecting(target), EffectMode::Replace))
             .id();
 
         app.world_mut().flush();
