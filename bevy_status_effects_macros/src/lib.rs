@@ -1,12 +1,11 @@
 use proc_macro_error::proc_macro_error;
-use proc_macro2::{Ident, TokenStream};
 use quote::quote;
-use syn::{Attribute, DeriveInput};
+use syn::DeriveInput;
 
 #[cfg(feature = "bevy_butler")]
-use proc_macro2::Span;
+use proc_macro2::{Ident, Span, TokenStream};
 #[cfg(feature = "bevy_butler")]
-use syn::Token;
+use syn::{Attribute, Token};
 
 #[proc_macro_derive(StatusEffect, attributes(add_component))]
 #[proc_macro_error]
@@ -42,7 +41,6 @@ pub fn stat_container_derive(item: proc_macro::TokenStream) -> proc_macro::Token
     #[cfg(not(feature = "bevy_butler"))]
     quote! {
         impl bevy_status_effects::StatusEffect for #struct_name {}
-        #trait_impl
     }
     .into()
 }
