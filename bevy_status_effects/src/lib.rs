@@ -6,33 +6,37 @@ pub mod timer;
 
 use crate::relation::{EffectedBy, Effecting};
 use bevy_app::{App, Plugin, PreUpdate};
-use bevy_asset::Handle;
 use bevy_ecs::component::HookContext;
 use bevy_ecs::prelude::*;
 use bevy_ecs::world::DeferredWorld;
-use bevy_image::Image;
+use bevy_reflect::prelude::ReflectDefault;
 
+use crate::timer::{Delay, Lifetime};
 pub use bevy_app::Startup;
+use bevy_reflect::Reflect;
 pub use bevy_status_effects_macros::StatusEffect;
 
 pub struct StatusEffectPlugin;
 
 impl Plugin for StatusEffectPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            PreUpdate,
-            (timer::despawn_finished_lifetimes, timer::tick_delay).chain(),
-        );
+        app.register_type::<EffectMode>()
+            .register_type::<Effecting>()
+            .register_type::<EffectedBy>()
+            .register_type::<Lifetime>()
+            .register_type::<Delay>()
+            .add_systems(
+                PreUpdate,
+                (timer::despawn_finished_lifetimes, timer::tick_delay).chain(),
+            );
     }
 }
-
-/// The icon of a status effect.
-pub struct Icon(pub Handle<Image>);
 
 pub trait StatusEffect {}
 
 /// Describes the logic used when multiple of the same effect are applied to the same entity.
-#[derive(Component, Eq, PartialEq, Debug, Default, Copy, Clone)]
+#[derive(Component, Reflect, Eq, PartialEq, Debug, Default, Copy, Clone)]
+#[reflect(Component, PartialEq, Debug, Default, Clone)]
 pub enum EffectMode {
     #[default]
     Stack,

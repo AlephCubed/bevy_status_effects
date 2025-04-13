@@ -1,9 +1,12 @@
+use crate::ReflectComponent;
 use bevy_ecs::prelude::{Commands, Component, Entity, Query, Res};
+use bevy_reflect::Reflect;
 use bevy_time::{Time, Timer, TimerMode};
 use std::time::Duration;
 
 /// Despawns the entity when the timer finishes.
-#[derive(Component)]
+#[derive(Component, Reflect, Eq, PartialEq, Debug, Clone)]
+#[reflect(Component, PartialEq, Debug, Clone)]
 pub struct Lifetime(pub Timer);
 
 impl Lifetime {
@@ -17,7 +20,8 @@ impl Lifetime {
 }
 
 /// Repeating timer used for the delay between effect applications.  
-#[derive(Component)]
+#[derive(Component, Reflect, Eq, PartialEq, Debug, Clone)]
+#[reflect(Component, PartialEq, Debug, Clone)]
 pub struct Delay(pub Timer);
 
 impl Delay {
