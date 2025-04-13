@@ -13,7 +13,7 @@ use bevy_reflect::prelude::ReflectDefault;
 
 use crate::timer::{Delay, Lifetime};
 pub use bevy_app::Startup;
-use bevy_reflect::Reflect;
+use bevy_reflect::{Reflect, reflect_trait};
 pub use bevy_status_effects_macros::StatusEffect;
 
 pub struct StatusEffectPlugin;
@@ -32,6 +32,7 @@ impl Plugin for StatusEffectPlugin {
     }
 }
 
+#[reflect_trait]
 pub trait StatusEffect {}
 
 /// Describes the logic used when multiple of the same effect are applied to the same entity.
