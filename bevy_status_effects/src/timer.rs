@@ -12,6 +12,9 @@ pub trait EffectTimer: Sized {
     }
 
     fn with_mode(self, mode: TimerMergeMode) -> Self;
+
+    /// Merges a new timer (self) into an existing one (other).
+    fn merge(&mut self, other: &Self);
 }
 
 /// Despawns the entity when the timer finishes.
@@ -33,6 +36,32 @@ impl EffectTimer for Lifetime {
     fn with_mode(mut self, mode: TimerMergeMode) -> Self {
         self.mode = mode;
         self
+    }
+
+    // Todo Remove duplicates, maybe by adding
+    // ```
+    // fn merge(&mut self, other: Self, mode: TimerMergeMode)
+    // ```
+    // method to `Timer`.
+    fn merge(&mut self, other: &Self) {
+        match self.mode {
+            TimerMergeMode::Replace => {}
+            TimerMergeMode::Inherit => self.timer = other.timer.clone(),
+            TimerMergeMode::Fraction => {
+                let fraction = other.timer.fraction();
+                let duration = self.timer.duration().as_secs_f32();
+                self.timer
+                    .set_elapsed(Duration::from_secs_f32(fraction * duration))
+            }
+            TimerMergeMode::Max => {
+                let old = other.timer.remaining_secs();
+                let new = self.timer.remaining_secs();
+
+                if old > new {
+                    self.timer = other.timer.clone()
+                }
+            }
+        }
     }
 }
 
@@ -64,6 +93,27 @@ impl EffectTimer for Delay {
     fn with_mode(mut self, mode: TimerMergeMode) -> Self {
         self.mode = mode;
         self
+    }
+
+    fn merge(&mut self, other: &Self) {
+        match self.mode {
+            TimerMergeMode::Replace => {}
+            TimerMergeMode::Inherit => self.timer = other.timer.clone(),
+            TimerMergeMode::Fraction => {
+                let fraction = other.timer.fraction();
+                let duration = self.timer.duration().as_secs_f32();
+                self.timer
+                    .set_elapsed(Duration::from_secs_f32(fraction * duration))
+            }
+            TimerMergeMode::Max => {
+                let old = other.timer.remaining_secs();
+                let new = self.timer.remaining_secs();
+
+                if old > new {
+                    self.timer = other.timer.clone()
+                }
+            }
+        }
     }
 }
 
@@ -106,5 +156,53 @@ pub(super) fn despawn_finished_lifetimes(
 pub(super) fn tick_delay(time: Res<Time>, mut query: Query<&mut Delay>) {
     for mut delay in &mut query {
         delay.timer.tick(time.delta());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn merge_replace() {
+        let first = Lifetime::from_seconds(1.0).with_mode(TimerMergeMode::Replace);
+        let second = Lifetime::from_seconds(2.0).with_mode(TimerMergeMode::Replace);
+        let mut result = second.clone();
+        result.merge(&first);
+
+        assert_eq!(result, second);
+    }
+
+    #[test]
+    fn merge_inherit() {
+        let first = Lifetime::from_seconds(1.0).with_mode(TimerMergeMode::Inherit);
+        let second = Lifetime::from_seconds(2.0).with_mode(TimerMergeMode::Inherit);
+        let mut result = second.clone();
+        result.merge(&first);
+
+        assert_eq!(result, first);
+    }
+
+    #[test]
+    fn merge_fraction() {
+        let first = Lifetime::from_seconds(1.0).with_mode(TimerMergeMode::Fraction);
+        let second = Lifetime::from_seconds(2.0).with_mode(TimerMergeMode::Fraction);
+        let mut result = second.clone();
+        result.merge(&first);
+
+        assert_eq!(result, second);
+    }
+
+    #[test]
+    fn merge_max() {
+        let first = Lifetime::from_seconds(1.0).with_mode(TimerMergeMode::Max);
+        let mut second = Lifetime::from_seconds(3.0).with_mode(TimerMergeMode::Max);
+        second.merge(&first);
+        let third = Lifetime::from_seconds(2.0).with_mode(TimerMergeMode::Max);
+
+        let mut result = third.clone();
+        result.merge(&second);
+
+        assert_eq!(result, second);
     }
 }
