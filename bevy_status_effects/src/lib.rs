@@ -11,7 +11,7 @@ use bevy_ecs::prelude::*;
 use bevy_ecs::world::DeferredWorld;
 use bevy_reflect::prelude::ReflectDefault;
 
-use crate::timer::{Delay, Lifetime};
+use crate::timer::{Delay, Lifetime, TimerMergeMode};
 pub use bevy_app::Startup;
 use bevy_reflect::{Reflect, reflect_trait};
 pub use bevy_status_effects_macros::StatusEffect;
@@ -25,6 +25,7 @@ impl Plugin for StatusEffectPlugin {
             .register_type::<EffectedBy>()
             .register_type::<Lifetime>()
             .register_type::<Delay>()
+            .register_type::<TimerMergeMode>()
             .add_systems(
                 PreUpdate,
                 (timer::despawn_finished_lifetimes, timer::tick_delay).chain(),
