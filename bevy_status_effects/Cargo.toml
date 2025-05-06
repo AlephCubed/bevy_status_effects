@@ -8,20 +8,24 @@ keywords = ["game", "gamedev", "bevy", "relationship"]
 repository = "https://github.com/AlephCubed/bevy_status_effects"
 license = "MIT OR Apache-2.0"
 authors = ["AlephCubed"]
+readme = "../README.md"
+
+[package.metadata.docs.rs]
+all-features = true
 
 [features]
 bevy_butler = ["bevy-butler", "bevy_status_effects_macros/bevy_butler"]
 
 [dependencies]
-bevy_app = { version = "0.16.0-rc", default-features = false, features = [
+bevy_app = { version = "0.16.0", default-features = false, features = [
   "bevy_reflect",
 ] }
-bevy-butler = { version = "0.6.1-alpha", optional = true }
-bevy_ecs = { version = "0.16.0-rc", default-features = false, features = [
+bevy-butler = { version = "0.6.1", optional = true }
+bevy_ecs = { version = "0.16.0", default-features = false, features = [
   "bevy_reflect",
 ] }
 bevy_status_effects_macros = { path = "../bevy_status_effects_macros" }
-bevy_reflect = { version = "0.16.0-rc", default-features = false }
-bevy_time = { version = "0.16.0-rc", default-features = false, features = [
+bevy_reflect = { version = "0.16.0", default-features = false }
+bevy_time = { version = "0.16.0", default-features = false, features = [
   "bevy_reflect",
 ] }
