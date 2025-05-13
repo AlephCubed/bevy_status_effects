@@ -20,6 +20,7 @@ proc-macro = true
 bevy_butler = []
 
 [dependencies]
+darling = "0.20.11"
 proc-macro2 = "1.0"
 proc-macro-error = "1.0"
 quote = "1.0"
