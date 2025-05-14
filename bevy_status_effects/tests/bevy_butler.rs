@@ -3,9 +3,7 @@
 use bevy_app::App;
 use bevy_butler::butler_plugin;
 use bevy_ecs::prelude::Component;
-use bevy_status_effects::relation::Effecting;
 use bevy_status_effects::*;
-use bevy_status_effects_macros::StatusEffect;
 
 #[butler_plugin]
 struct ButlerPlugin;

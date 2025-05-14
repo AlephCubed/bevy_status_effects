@@ -1,4 +1,4 @@
-use bevy_status_effects::timer::{EffectTimer, Lifetime, TimerMergeMode};
+use bevy_status_effects::*;
 
 #[test]
 fn merge_replace() {

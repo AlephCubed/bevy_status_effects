@@ -39,15 +39,15 @@ impl<'a> ToTokens for ButlerAttribute<'a> {
         if let Some(plugin_path) = &self.plugin {
             let ident = &self.ident;
             let plugin = &plugin_path.0;
-            let use_as = format_ident!("__{ident}_component");
+            let use_as = format_ident!("__{ident}_status_effect");
 
             // Due to some strange import scoping issues, we cannot use the plugins.
             // Instead, we can just recreate the plugin's functionality.
             tokens.extend(quote! {
                 #[bevy_butler::add_system(
                     generics = <#ident>,
-                    plugin = #plugin, schedule =
-                    bevy_status_effects::Startup
+                    plugin = #plugin,
+                    schedule = bevy_status_effects::__Startup
                 )]
                 use bevy_status_effects::init_effect_hook as #use_as;
             });
