@@ -38,8 +38,10 @@ pub trait StatusEffect {}
 #[derive(Component, Reflect, Eq, PartialEq, Debug, Default, Copy, Clone)]
 #[reflect(Component, PartialEq, Debug, Default, Clone)]
 pub enum EffectMode {
+    /// Multiple of the same effect can exist at once.
     #[default]
     Stack,
+    /// When an effect is spawned, any existing effects are replaced (despawned).
     Replace,
     // Todo
     // Merge,

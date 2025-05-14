@@ -5,6 +5,7 @@ use bevy_ecs::component::HookContext;
 use bevy_ecs::prelude::{Component, RelationshipTarget, World};
 use bevy_ecs::world::DeferredWorld;
 
+/// A system that registers the effect hook for a given type.
 pub fn init_effect_hook<T: Component + StatusEffect>(world: &mut World) {
     world
         .register_component_hooks::<T>()

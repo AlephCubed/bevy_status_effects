@@ -4,16 +4,21 @@ use bevy_reflect::Reflect;
 use bevy_time::{Time, Timer, TimerMode};
 use std::time::Duration;
 
+/// A timer which is used for status effects and includes a [`TimerMergeMode`].
 pub trait EffectTimer: Sized {
+    /// Creates a new timer from a duration.
     fn new(duration: Duration) -> Self;
 
+    /// Creates a new time from a duration, in seconds.
     fn from_seconds(seconds: f32) -> Self {
         Self::new(Duration::from_secs_f32(seconds))
     }
 
+    /// A builder that overwrites the current merge mode with a new value.
     fn with_mode(self, mode: TimerMergeMode) -> Self;
 
-    /// Merges a new timer (self) into an existing one (other).
+    /// Merges an existing timer (other) with the new one (self).
+    /// Behaviour depends on the current [`TimerMergeMode`].
     fn merge(&mut self, other: &Self);
 }
 
@@ -21,7 +26,9 @@ pub trait EffectTimer: Sized {
 #[derive(Component, Reflect, Eq, PartialEq, Debug, Clone)]
 #[reflect(Component, PartialEq, Debug, Clone)]
 pub struct Lifetime {
+    /// Tracks the elapsed time. Once the timer is finished, the entity will be despawned.
     pub timer: Timer,
+    /// Controls the merge behaviour when an effect is [replaced](super::EffectMode::Replace).
     pub mode: TimerMergeMode,
 }
 
@@ -38,11 +45,6 @@ impl EffectTimer for Lifetime {
         self
     }
 
-    // Todo Remove duplicates, maybe by adding
-    // ```
-    // fn merge(&mut self, other: Self, mode: TimerMergeMode)
-    // ```
-    // method to `Timer`.
     fn merge(&mut self, other: &Self) {
         match self.mode {
             TimerMergeMode::Replace => {}
@@ -78,7 +80,9 @@ impl Default for Lifetime {
 #[derive(Component, Reflect, Eq, PartialEq, Debug, Clone)]
 #[reflect(Component, PartialEq, Debug, Clone)]
 pub struct Delay {
+    /// Tracks the elapsed time.
     pub timer: Timer,
+    /// Controls the merge behaviour when an effect is [replaced](super::EffectMode::Replace).
     pub mode: TimerMergeMode,
 }
 
@@ -126,6 +130,7 @@ impl Default for Delay {
     }
 }
 
+/// Controls the merge behaviour of a timer when it's effect is [replaced](super::EffectMode::Replace).
 #[derive(Reflect, Eq, PartialEq, Debug, Copy, Clone)]
 #[reflect(PartialEq, Debug, Clone)]
 pub enum TimerMergeMode {
