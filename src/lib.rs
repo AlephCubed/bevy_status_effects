@@ -1,21 +1,17 @@
 //! Relationship-based status effects for bevy.
 
-mod hook;
+mod command;
 mod relation;
 mod timer;
 
 use bevy_app::{App, Plugin, PreUpdate};
 use bevy_ecs::prelude::*;
 use bevy_reflect::prelude::ReflectDefault;
-use bevy_reflect::{Reflect, reflect_trait};
+use bevy_reflect::{reflect_trait, Reflect};
 
-pub use bevy_status_effects_macros::StatusEffect;
-pub use hook::*;
+pub use command::*;
 pub use relation::*;
 pub use timer::*;
-
-#[doc(hidden)]
-pub use bevy_app::Startup as __Startup;
 
 pub struct StatusEffectPlugin;
 
@@ -41,8 +37,7 @@ pub enum EffectMode {
     /// Multiple of the same effect can exist at once.
     #[default]
     Stack,
-    /// When an effect is spawned, any existing effects are replaced (despawned).
+    /// When an effect is added, any matching effects are removed.
     Replace,
-    // Todo
-    // Merge,
+    Merge,
 }
