@@ -1,19 +1,26 @@
-use crate::{EffectMode, EffectedBy, Effecting};
+use crate::{Delay, EffectMode, EffectedBy, Effecting, Lifetime};
 use bevy_ecs::prelude::*;
 
 pub struct AddEffect<B: Bundle> {
     pub target: Entity,
+    pub bundle: EffectBundle<B>,
+}
+
+#[derive(Default)]
+pub struct EffectBundle<B: Bundle> {
     pub name: Name,
     pub mode: EffectMode,
+    pub lifetime: Option<Lifetime>,
+    pub delay: Option<Delay>,
     pub bundle: B,
 }
 
 fn insert_effect<B: Bundle>(mut world: EntityWorldMut, effect: AddEffect<B>) {
     world.insert((
         Effecting(effect.target),
-        effect.name,
-        effect.mode,
-        effect.bundle,
+        effect.bundle.name,
+        effect.bundle.mode,
+        effect.bundle.bundle,
     ));
 }
 
@@ -23,7 +30,7 @@ fn spawn_effect<B: Bundle>(world: &mut World, effect: AddEffect<B>) {
 
 impl<B: Bundle> Command for AddEffect<B> {
     fn apply(self, world: &mut World) -> () {
-        if self.mode == EffectMode::Stack {
+        if self.bundle.mode == EffectMode::Stack {
             spawn_effect(world, self);
             return;
         }
@@ -45,12 +52,12 @@ impl<B: Bundle> Command for AddEffect<B> {
             };
 
             // Todo Think more about.
-            if self.mode != *other_mode {
+            if self.bundle.mode != *other_mode {
                 return None;
             }
 
             if let Some(name) = world.get::<Name>(*entity) {
-                if name == &self.name {
+                if name == &self.bundle.name {
                     return Some(*entity);
                 }
             }
@@ -83,29 +90,12 @@ impl<B: Bundle> Command for AddEffect<B> {
 }
 
 pub trait AddEffectExt {
-    fn add_effect<B: Bundle>(
-        &mut self,
-        target: Entity,
-        name: Name,
-        mode: EffectMode,
-        bundle: B,
-    ) -> &mut Self;
+    fn add_effect<B: Bundle>(&mut self, target: Entity, bundle: EffectBundle<B>) -> &mut Self;
 }
 
 impl AddEffectExt for Commands<'_, '_> {
-    fn add_effect<B: Bundle>(
-        &mut self,
-        target: Entity,
-        name: Name,
-        mode: EffectMode,
-        bundle: B,
-    ) -> &mut Self {
-        self.queue(AddEffect {
-            target,
-            name,
-            mode,
-            bundle,
-        });
+    fn add_effect<B: Bundle>(&mut self, target: Entity, bundle: EffectBundle<B>) -> &mut Self {
+        self.queue(AddEffect { target, bundle });
         self
     }
 }
