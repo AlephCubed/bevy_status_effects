@@ -136,10 +136,8 @@ fn timer_merge_replace() {
         target,
         EffectBundle {
             mode: EffectMode::Merge,
-            bundle: (
-                MyEffect(0),
-                Lifetime::from_seconds(1.0).with_mode(TimerMergeMode::Replace),
-            ),
+            lifetime: Some(Lifetime::from_seconds(1.0).with_mode(TimerMergeMode::Replace)),
+            bundle: MyEffect(0),
             ..Default::default()
         },
     );
@@ -147,7 +145,8 @@ fn timer_merge_replace() {
         target,
         EffectBundle {
             mode: EffectMode::Merge,
-            bundle: (MyEffect(1), second_lifetime.clone()),
+            lifetime: Some(second_lifetime.clone()),
+            bundle: MyEffect(1),
             ..Default::default()
         },
     );
@@ -170,7 +169,8 @@ fn timer_merge_inherit() {
         target,
         EffectBundle {
             mode: EffectMode::Merge,
-            bundle: (MyEffect(0), first_delay.clone()),
+            delay: Some(first_delay.clone()),
+            bundle: MyEffect(0),
             ..Default::default()
         },
     );
@@ -178,10 +178,8 @@ fn timer_merge_inherit() {
         target,
         EffectBundle {
             mode: EffectMode::Merge,
-            bundle: (
-                MyEffect(1),
-                Delay::from_seconds(2.0).with_mode(TimerMergeMode::Inherit),
-            ),
+            delay: Some(Delay::from_seconds(2.0).with_mode(TimerMergeMode::Inherit)),
+            bundle: MyEffect(1),
             ..Default::default()
         },
     );
@@ -206,13 +204,11 @@ fn timer_merge_fraction() {
         target,
         EffectBundle {
             mode: EffectMode::Merge,
-            bundle: (
-                MyEffect(0),
-                Delay {
-                    timer: first_timer,
-                    mode: TimerMergeMode::Fraction,
-                },
-            ),
+            delay: Some(Delay {
+                timer: first_timer,
+                mode: TimerMergeMode::Fraction,
+            }),
+            bundle: MyEffect(0),
             ..Default::default()
         },
     );
@@ -220,10 +216,8 @@ fn timer_merge_fraction() {
         target,
         EffectBundle {
             mode: EffectMode::Merge,
-            bundle: (
-                MyEffect(1),
-                Delay::from_seconds(10.0).with_mode(TimerMergeMode::Fraction),
-            ),
+            delay: Some(Delay::from_seconds(10.0).with_mode(TimerMergeMode::Fraction)),
+            bundle: MyEffect(1),
             ..Default::default()
         },
     );
@@ -253,10 +247,8 @@ fn timer_merge_max() {
         target,
         EffectBundle {
             mode: EffectMode::Merge,
-            bundle: (
-                MyEffect(0),
-                Delay::from_seconds(1.0).with_mode(TimerMergeMode::Max),
-            ),
+            delay: Some(Delay::from_seconds(1.0).with_mode(TimerMergeMode::Max)),
+            bundle: MyEffect(0),
             ..Default::default()
         },
     );
@@ -264,7 +256,8 @@ fn timer_merge_max() {
         target,
         EffectBundle {
             mode: EffectMode::Merge,
-            bundle: (MyEffect(1), max.clone()),
+            delay: Some(max.clone()),
+            bundle: MyEffect(1),
             ..Default::default()
         },
     );
@@ -272,10 +265,8 @@ fn timer_merge_max() {
         target,
         EffectBundle {
             mode: EffectMode::Merge,
-            bundle: (
-                MyEffect(2),
-                Delay::from_seconds(2.0).with_mode(TimerMergeMode::Max),
-            ),
+            delay: Some(Delay::from_seconds(2.0).with_mode(TimerMergeMode::Max)),
+            bundle: MyEffect(2),
             ..Default::default()
         },
     );
