@@ -1,4 +1,4 @@
-use crate::{Delay, EffectMode, EffectTimer, EffectedBy, Effecting, Lifetime};
+use crate::{EffectMode, EffectedBy, Effecting};
 use bevy_ecs::prelude::*;
 
 pub struct AddEffect<B: Bundle> {
@@ -8,16 +8,23 @@ pub struct AddEffect<B: Bundle> {
     pub bundle: B,
 }
 
-impl<B: Bundle> AddEffect<B> {
-    fn to_bundle(self) -> impl Bundle {
-        (self.name, self.mode, self.bundle)
-    }
+fn insert_effect<B: Bundle>(mut world: EntityWorldMut, effect: AddEffect<B>) {
+    world.insert((
+        Effecting(effect.target),
+        effect.name,
+        effect.mode,
+        effect.bundle,
+    ));
+}
+
+fn spawn_effect<B: Bundle>(world: &mut World, effect: AddEffect<B>) {
+    insert_effect(world.spawn(()), effect);
 }
 
 impl<B: Bundle> Command for AddEffect<B> {
     fn apply(self, world: &mut World) -> () {
         if self.mode == EffectMode::Stack {
-            world.spawn((Effecting(self.target), self.to_bundle()));
+            spawn_effect(world, self);
             return;
         }
 
@@ -25,7 +32,7 @@ impl<B: Bundle> Command for AddEffect<B> {
             .get::<EffectedBy>(self.target)
             .map(|e| e.collection().clone())
         else {
-            world.spawn((Effecting(self.target), self.to_bundle()));
+            spawn_effect(world, self);
             return;
         };
 
@@ -52,26 +59,26 @@ impl<B: Bundle> Command for AddEffect<B> {
         });
 
         let Some(old_entity) = old_entity else {
-            world.spawn((Effecting(self.target), self.to_bundle()));
+            spawn_effect(world, self);
             return;
         };
 
-        if self.mode == EffectMode::Merge {
-            if let Some(old_lifetime) = world.get::<Lifetime>(old_entity).cloned() {
-                if let Some(mut lifetime) = world.get_mut::<Lifetime>(self.target) {
-                    lifetime.merge(&old_lifetime)
-                }
-            }
+        // Todo
+        // if self.mode == EffectMode::Merge {
+        //     if let Some(old_lifetime) = world.get::<Lifetime>(old_entity).cloned() {
+        //         if let Some(mut lifetime) = world.get_mut::<Lifetime>(self.target) {
+        //             lifetime.merge(&old_lifetime)
+        //         }
+        //     }
+        //
+        //     if let Some(old_delay) = world.get::<Delay>(old_entity).cloned() {
+        //         if let Some(mut delay) = world.get_mut::<Delay>(self.target) {
+        //             delay.merge(&old_delay)
+        //         }
+        //     }
+        // }
 
-            if let Some(old_delay) = world.get::<Delay>(old_entity).cloned() {
-                if let Some(mut delay) = world.get_mut::<Delay>(self.target) {
-                    delay.merge(&old_delay)
-                }
-            }
-        }
-
-        world.entity_mut(old_entity).insert(self.to_bundle());
-        return;
+        insert_effect(world.entity_mut(old_entity), self);
     }
 }
 
