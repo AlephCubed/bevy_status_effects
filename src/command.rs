@@ -1,21 +1,34 @@
 use crate::{Delay, EffectMode, EffectTimer, EffectedBy, Effecting, Lifetime};
 use bevy_ecs::prelude::*;
 
-pub struct AddEffect<B: Bundle> {
+/// Applies an effect to a target entity.
+/// This *might* spawn a new entity, depending on what effects are already applied to the target.
+pub struct AddEffectCommand<B: Bundle> {
+    /// The entity to apply the effect to.
     pub target: Entity,
+    /// The effect to apply.
     pub bundle: EffectBundle<B>,
 }
 
+/// A "bundle" of components/settings used when applying an effect.
+///
+/// Not that this doesn't implement [`Bundle`] due to technical limitations.
 #[derive(Default)]
 pub struct EffectBundle<B: Bundle> {
+    /// The name/ID of the effect. Effects with different IDs have no effect on one another.
     pub name: Name,
+    /// Describes the logic used when new effect collides with an existing one.
     pub mode: EffectMode,
+    /// The duration of the effect.
+    #[doc(alias = "duration")]
     pub lifetime: Option<Lifetime>,
+    /// Repeating timer used for the delay between effect applications.
     pub delay: Option<Delay>,
+    /// Components that will be added to the effect. This is where the actual effect components get added.
     pub bundle: B,
 }
 
-fn insert_effect<B: Bundle>(mut entity: EntityWorldMut, effect: AddEffect<B>) {
+fn insert_effect<B: Bundle>(mut entity: EntityWorldMut, effect: AddEffectCommand<B>) {
     entity.insert((
         Effecting(effect.target),
         effect.bundle.name,
@@ -32,11 +45,11 @@ fn insert_effect<B: Bundle>(mut entity: EntityWorldMut, effect: AddEffect<B>) {
     }
 }
 
-fn spawn_effect<B: Bundle>(world: &mut World, effect: AddEffect<B>) {
+fn spawn_effect<B: Bundle>(world: &mut World, effect: AddEffectCommand<B>) {
     insert_effect(world.spawn(()), effect);
 }
 
-impl<B: Bundle> Command for AddEffect<B> {
+impl<B: Bundle> Command for AddEffectCommand<B> {
     fn apply(mut self, world: &mut World) -> () {
         if self.bundle.mode == EffectMode::Stack {
             spawn_effect(world, self);
@@ -96,13 +109,16 @@ impl<B: Bundle> Command for AddEffect<B> {
     }
 }
 
+/// An extension trait for adding effect methods to [`Commands`].
 pub trait AddEffectExt {
+    /// Applies an effect to a target entity.
+    /// This *might* spawn a new entity, depending on what effects are already applied to the target.
     fn add_effect<B: Bundle>(&mut self, target: Entity, bundle: EffectBundle<B>) -> &mut Self;
 }
 
 impl AddEffectExt for Commands<'_, '_> {
     fn add_effect<B: Bundle>(&mut self, target: Entity, bundle: EffectBundle<B>) -> &mut Self {
-        self.queue(AddEffect { target, bundle });
+        self.queue(AddEffectCommand { target, bundle });
         self
     }
 }

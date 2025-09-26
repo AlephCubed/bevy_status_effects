@@ -13,6 +13,7 @@ pub use command::*;
 pub use relation::*;
 pub use timer::*;
 
+/// Setup required types and systems for `bevy_status_effects`.
 pub struct StatusEffectPlugin;
 
 impl Plugin for StatusEffectPlugin {
@@ -36,5 +37,8 @@ pub enum EffectMode {
     Stack,
     /// When an effect is added, it will replace matching effects.
     Replace,
+    /// When an effect is added, it will merge with matching effects.
+    ///
+    /// Currently, this means that timers ([`Lifetime`] and [`Delay`]), will merge depending on their [`TimerMergeMode`].
     Merge,
 }

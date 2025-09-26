@@ -62,6 +62,7 @@ macro_rules! impl_effect_timer {
 }
 
 /// Despawns the entity when the timer finishes.
+#[doc(alias = "Duration")]
 #[derive(Component, Reflect, Eq, PartialEq, Debug, Clone)]
 #[reflect(Component, PartialEq, Debug, Clone)]
 pub struct Lifetime {
