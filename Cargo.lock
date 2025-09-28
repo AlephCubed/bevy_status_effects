@@ -443,6 +443,54 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_auto_plugin"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71599f6ff43778a56d1c9d257bcaf257abdae3385c8c2be883646dd64d1bbb93"
+dependencies = [
+ "bevy_auto_plugin_proc_macros",
+ "bevy_auto_plugin_shared",
+ "cfg_aliases",
+ "rustc_version",
+]
+
+[[package]]
+name = "bevy_auto_plugin_proc_macros"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "07922d132befe18e2878cd170ba80110437d509e265f4c138617766191fb22a6"
+dependencies = [
+ "bevy_auto_plugin_shared",
+ "darling",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
+]
+
+[[package]]
+name = "bevy_auto_plugin_shared"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10522f47da314c6a708f3c2001db6eaa0e94a44f06462700e57d1a28a7cdcc54"
+dependencies = [
+ "bevy_app",
+ "bevy_ecs",
+ "bevy_ecs_macros",
+ "bevy_log",
+ "bevy_reflect",
+ "bevy_reflect_derive",
+ "bevy_state",
+ "darling",
+ "inventory",
+ "linkme",
+ "proc-macro2",
+ "quote",
+ "smart-default",
+ "syn 2.0.106",
+ "thiserror 2.0.16",
+]
+
+[[package]]
 name = "bevy_color"
 version = "0.16.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1117,6 +1165,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_app",
+ "bevy_auto_plugin",
  "bevy_ecs",
  "bevy_reflect",
  "bevy_time",
@@ -2464,6 +2513,7 @@ version = "0.2.0"
 source = "git+https://github.com/AlephCubed/immediate_stats?branch=apply-scaled#a0454e7a0a1098cb34f61906500361d3390c2e86"
 dependencies = [
  "bevy_app",
+ "bevy_auto_plugin",
  "bevy_ecs",
  "bevy_reflect",
  "immediate_stats_macros",
@@ -2526,6 +2576,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e05c02b5e89bff3b946cedeca278abc628fe811e604f027c45a8aa3cf793d0eb"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "inventory"
+version = "0.3.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc61209c082fbeb19919bee74b176221b27223e27b65d781eb91af24eb1fb46e"
+dependencies = [
+ "rustversion",
 ]
 
 [[package]]
@@ -2688,6 +2747,26 @@ checksum = "3c8469b4a23b962c1396b9b451dda50ef5b283e8dd309d69033475fa9b334324"
 dependencies = [
  "libc",
  "pkg-config",
+]
+
+[[package]]
+name = "linkme"
+version = "0.3.34"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f07f4db2b55071a97d3c0acf419fe28de473bbd52eaa4c487001cc83f5d9b01"
+dependencies = [
+ "linkme-impl",
+]
+
+[[package]]
+name = "linkme-impl"
+version = "0.3.34"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5845921345104f03495265b487d307e8a27aad1c66712883a5e47f45f27a574"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
 ]
 
 [[package]]
@@ -3697,6 +3776,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "357703d41365b4b27c590e3ed91eabb1b663f07c4c084095e60cbed4362dff0d"
 
 [[package]]
+name = "rustc_version"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cfcb3a22ef46e85b45de6ee7e79d063319ebb6594faafcf1c225ea92ab6e9b92"
+dependencies = [
+ "semver",
+]
+
+[[package]]
 name = "rustix"
 version = "0.38.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3780,6 +3868,12 @@ name = "self_cell"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0f7d95a54511e0c7be3f51e8867aa8cf35148d7b9445d44de2f943e2b206e749"
+
+[[package]]
+name = "semver"
+version = "1.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d767eb0aabc880b29956c35734170f26ed551a859dbd361d140cdbeca61ab1e2"
 
 [[package]]
 name = "send_wrapper"
@@ -3881,6 +3975,17 @@ name = "smallvec"
 version = "1.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
+
+[[package]]
+name = "smart-default"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0eb01866308440fc64d6c44d9e86c5cc17adfe33c4d6eed55da9145044d0ffc1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
+]
 
 [[package]]
 name = "smol_str"

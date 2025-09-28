@@ -27,7 +27,8 @@ bevy_time = { version = "0.16.0", default-features = false, features = [
 
 [dev-dependencies]
 bevy = "0.16.1"
-immediate_stats = { git = "https://github.com/AlephCubed/immediate_stats", branch = "apply-scaled", features = ["bevy"] }
+immediate_stats = { git = "https://github.com/AlephCubed/immediate_stats", branch = "apply-scaled", features = ["bevy_auto_plugin"] }
+bevy_auto_plugin = "0.5.0"
 
 [lints.rust]
 missing_docs = "warn"
@@ -43,3 +44,7 @@ path = "examples/poison.rs"
 [[example]]
 name = "decaying_speed"
 path = "examples/immediate_stats/decaying_speed.rs"
+
+[[example]]
+name = "decaying_speed_auto_plugin"
+path = "examples/immediate_stats/decaying_speed_auto_plugin.rs"
