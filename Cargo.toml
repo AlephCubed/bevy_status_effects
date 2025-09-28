@@ -27,6 +27,7 @@ bevy_time = { version = "0.16.0", default-features = false, features = [
 
 [dev-dependencies]
 bevy = "0.16.1"
+immediate_stats = { git = "https://github.com/AlephCubed/immediate_stats", branch = "apply-scaled", features = ["bevy"] }
 
 [lints.rust]
 missing_docs = "warn"
@@ -38,3 +39,7 @@ unused_qualifications = "warn"
 [[example]]
 name = "poison"
 path = "examples/poison.rs"
+
+[[example]]
+name = "decaying_speed"
+path = "examples/immediate_stats/decaying_speed.rs"
