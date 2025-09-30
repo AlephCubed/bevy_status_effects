@@ -6,8 +6,8 @@ mod timer;
 
 use bevy_app::{App, Plugin, PreUpdate};
 use bevy_ecs::prelude::*;
-use bevy_reflect::prelude::ReflectDefault;
 use bevy_reflect::Reflect;
+use bevy_reflect::prelude::ReflectDefault;
 
 pub use command::*;
 pub use relation::*;

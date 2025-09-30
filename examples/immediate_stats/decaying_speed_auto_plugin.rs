@@ -5,7 +5,7 @@
 //! This uses [`EffectMode::Merge`], which prevents having multiple of the effect applied at the same time (no 10x speed multiplier for you).
 
 use bevy::prelude::*;
-use bevy_auto_plugin::modes::global::prelude::{auto_component, auto_system, AutoPlugin};
+use bevy_auto_plugin::modes::global::prelude::{AutoPlugin, auto_component, auto_system};
 use bevy_status_effects::*;
 use immediate_stats::*;
 

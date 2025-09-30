@@ -57,7 +57,7 @@ fn deal_poison_damage(
 ) {
     for (target, delay, poison) in effects {
         // We wait until the delay finishes to apply the damage.
-        if !delay.timer.finished() {
+        if !delay.timer.is_finished() {
             continue;
         }
 

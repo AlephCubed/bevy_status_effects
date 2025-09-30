@@ -128,7 +128,7 @@ pub(super) fn despawn_finished_lifetimes(
     for (entity, mut lifetime) in &mut query {
         lifetime.timer.tick(time.delta());
 
-        if lifetime.timer.finished() {
+        if lifetime.timer.is_finished() {
             commands.entity(entity).despawn();
         }
     }
